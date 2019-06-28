@@ -20,7 +20,7 @@
                 </el-row>
 
                 <!-- 登录注册与用户信息 -->
-                <el-row class="login-register" v-if="true">
+                <el-row class="login-register" v-if="!$store.state.user.userInfo.token">
                     <el-dropdown>
                         <span class="el-dropdown-link">
                             <i class="el-icon-bell"></i>
@@ -31,7 +31,7 @@
                             <el-dropdown-item>消息</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
-                    <nuxt-link to="/uesr/login">登录 / 注册</nuxt-link>
+                    <nuxt-link to='/user/login'>登录 / 注册</nuxt-link>
                 </el-row>
 
                 <el-row v-else class="user">
@@ -48,14 +48,16 @@
                     <el-dropdown>
                         <span class="el-dropdown-link">
                            <el-row type="flex" align="middle" class="userinfo">
-                                <img src="http://157.122.54.189:9095/assets/images/avatar.jpg" alt="">
-                                <i class="user-name">用户名</i>
+                                <img :src="$axios.defaults.baseURL + $store.state.user.userInfo.user.defaultAvatar" alt="">
+                                <i class="user-name">{{$store.state.user.userInfo.user.nickname}}</i>
                                 <i class="el-icon-caret-bottom el-icon--right"></i>
                             </el-row>
                         </span>
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item>个人中心</el-dropdown-item>
-                            <el-dropdown-item>退出</el-dropdown-item>
+                            <el-dropdown-item>
+                                <div @click="handleLogout">退出</div>
+                            </el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
 
@@ -71,7 +73,14 @@
 
 <script>
 export default {
-
+    // mounted(){
+    //     console.log(this.$store.state.user);
+    // }
+    methods:{
+        handleLogout:function () {
+            this.$store.commit('user/clearUserInfo');
+        }
+    }
 }
 </script>
 
