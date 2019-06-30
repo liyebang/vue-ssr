@@ -45,7 +45,8 @@ export const actions = {
             commit("setUserInfo", res.data);
 
             // 调用login方法传入的成功的回调函数
-            Promise.resolve();   
+            Promise.resolve();   //用于改变之后.then()的触发位置，加了之后，调用之后的所加的.then()在其调用的位置触发，否者视为跟在此后面触发
+            // return res.data; 
         })
     }
 }

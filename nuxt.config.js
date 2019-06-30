@@ -33,7 +33,9 @@ export default {
   plugins: [
     '@/plugins/element-ui',
     //调用`localStorage.js
-    { src: '@/plugins/localStorage', ssr: false }
+    { src: '@/plugins/localStorage', ssr: false },
+    //调用自己写的axios
+    '@/plugins/axios'
   ],
   /*
   ** Nuxt.js modules

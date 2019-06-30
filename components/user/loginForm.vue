@@ -44,6 +44,7 @@ export default {
               if(valid){
                   //调用actions
                   this.$store.dispatch('user/login',this.form).then( v => {
+                    console.log(v);
                       this.$message.success('登录成功，正在跳转....');
                       setTimeout( () => {
                           this.$router.push("/");
