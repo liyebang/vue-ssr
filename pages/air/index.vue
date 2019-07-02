@@ -39,7 +39,21 @@
 
     <!-- 特价机票 -->
     <div class="air-sale">
-        
+        <div 
+        class='air-sale-item'
+        v-for="(item, index) in salelist"
+        :key="index"
+        @click="handleClick(item)">
+          <img :src="item.cover" alt="">
+          <div class="air-sale-bottom">
+            <div>
+              {{item.departCity}} - {{item.destCity}}
+            </div>
+            <div class="air-sale--price">
+              ￥{{item.price}}
+            </div>
+          </div>
+        </div>
     </div>
   </section>
 </template>
@@ -51,6 +65,28 @@ import SearchForm from '@/components/air/searchForm.vue';
 export default {
     components:{
         SearchForm
+    },
+    data:function () {
+      return {
+        salelist:[]
+      }
+    },
+    mounted(){
+      this.$axios({
+        url: '/airs/sale',
+        mounte: 'GET'
+      }).then( res => {
+        // console.log(res);
+        let { data } = res.data;
+        // console.log(data);
+        this.salelist = data;
+      })
+    },
+    methods:{
+      handleClick: function (item) {
+        // console.log(item);
+        this.$router.push(`/air/flights?departCity=${item.departCity}&departCode=${item.departCode}&destCity=${item.destCity}&destCode=${item.destCode}&departDate=${item.departDate}`)
+      }
     }
 }
 </script>
@@ -167,4 +203,39 @@ export default {
     font-size:20px;
   }
 }
+
+.air-sale{
+  display: flex;
+  justify-content: space-between;
+  .air-sale-item{
+    width: 225px;
+    height: 141px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    img{
+      width: 100%;
+    }
+    .air-sale-bottom{
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 195px;
+      display: flex;
+      justify-content: space-between;
+      background-color: rgba(0,0,0,.4);
+      padding: 0 15px;
+      height: 30px;
+      line-height: 30px;
+      font-size: 14px;
+      color: #fff;
+      .air-sale--price{
+        font-size: 18px;
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+
 </style>

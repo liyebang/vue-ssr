@@ -107,6 +107,10 @@ export default {
                 }
             })
 
+            //预防用户不选，自动填充第一项
+            this.form.departCity = data[0].name.replace("市", "");
+            this.form.departCode = data[0].sort;
+
             // cb函数接收的参数是数组，数据里面每一项必须是对象，然后带有value的属性
             cb(newData);
         } )
@@ -125,12 +129,18 @@ export default {
             method: 'GET'
         }).then( res => {
             const {data} = res.data;
+            // console.log(data);
             const newData = data.map(v => {
                 return {
                     ...v,
                     value: v.name.replace("市", "")
                 }
             })
+
+            //预防用户不选，自动填充第一项
+            this.form.destCity = data[0].name.replace("市", "");
+            this.form.destCode = data[0].sort;
+
 
             // cb函数接收的参数是数组，数据里面每一项必须是对象，然后带有value的属性
             cb(newData);
@@ -155,7 +165,13 @@ export default {
     },
 
     // 触发和目标城市切换时触发
-    handleReverse() {},
+    handleReverse() {
+      let { departCity, departCode, destCity, destCode  } = this.form;
+      this.form.departCity = destCity;
+      this.form.departCode = destCode;
+      this.form.destCity = departCity;
+      this.form.destCode = departCode;
+    },
 
     // 提交表单是触发
     handleSubmit() {
