@@ -92,7 +92,9 @@ export default {
     queryDepartSearch(value, cb) {
     //   cb([{ value: 1 }, { value: 2 }, { value: 3 }]);
         if(!value) {
+          cb([{ value: '请输入城市' }]);
             return;
+            
         }
 
         this.$axios({
@@ -121,6 +123,7 @@ export default {
     queryDestSearch(value, cb) {
     //   cb([{ value: 1 }, { value: 2 }, { value: 3 }]);
         if(!value) {
+          cb([{ value: '请输入城市' }]);
             return;
         }
 
@@ -210,6 +213,13 @@ export default {
             return;
         }
 
+
+        //把提交的信息存储在本地，供历史记录使用
+        const airs = JSON.parse(localStorage.getItem('airs') || '[]');
+        airs.unshift(this.form);
+        localStorage.setItem('airs',JSON.stringify(airs));
+
+
         // 跳转到列表页
         this.$router.push({
             path: "/air/flights",
@@ -217,8 +227,7 @@ export default {
         });
 
     }
-  },
-  mounted() {}
+  }
 };
 </script>
 

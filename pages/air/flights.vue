@@ -1,16 +1,23 @@
 <template>
-    <el-row class="main" type="flex" justify="space-betwee">
+    <el-row class="main" type="flex" justify="space-between">
         <el-row class="main-left">
 
             <!-- 左边头部 -->
             <el-row class="main-left-header">
 
                 
-                <FlightsFilters :data='options'/>
+                <FlightsFilters 
+                :data='options' 
+                :initFlights='initFlights'
+                @dataListChange='dataListChange'/>
                     
 
                 <!-- 列表头部 -->
-                <FightsListHead style='margin: 20px 0 5px 0' />
+                <FightsListHead style='margin: 20px 0 5px 0' v-if="total !== 0"/>
+
+                <div v-if="total === 0" style="text-align: center">
+                    暂无航班信息
+                </div>
 
                 <!-- 机票列表 -->
                 <FlightsItem
@@ -33,7 +40,9 @@
 
             </el-row>
         </el-row>
-        <el-row class="main-right">456</el-row>
+        <el-row class="main-right">
+            <FlightsAside/>
+        </el-row>
     </el-row>
 </template>
 
@@ -41,6 +50,7 @@
 import FightsListHead from '@/components/air/fightsListHead.vue';
 import FlightsItem from '@/components/air/flightsItem.vue';
 import FlightsFilters from '@/components/air/flightsFilters.vue';
+import FlightsAside from '../../components/air/flightsAside.vue';
 
 export default {
     data:function () {
@@ -51,13 +61,15 @@ export default {
             currentPage: 1,
             pageSize: 5,
             total: 0,
-            dataList: []  // 分页之后的数据列表
+            dataList: [],  // 分页之后的数据列表
+            initFlights:[] //原始的机票数据
         }
     },
     components:{
         FightsListHead,
         FlightsItem,
-        FlightsFilters
+        FlightsFilters,
+        FlightsAside
     },
     mounted(){
         this.$axios({
@@ -65,11 +77,12 @@ export default {
             params: this.$route.query,
             method: 'GET'
         }).then( res => {
-            console.log(res);
-            let { flights, total, options } = res.data
+            // console.log(res);
+            let { flights, total, options } = res.data;
             this.flights = flights;
             this.total = total;
             this.options = options;
+            this.initFlights = flights;
             // console.log(this.flights);
             // this.dataList = this.flights.slice(
             //     (this.currentPage - 1) * this.pageSize,
@@ -79,7 +92,12 @@ export default {
         })
     },
     methods:{
-        dataListChange(){
+        dataListChange(arr){
+            if(arr){
+                this.flights = arr;
+                this.total = arr.length;
+                this.currentPage = 1;
+            }
             this.dataList = this.flights.slice(
                 (this.currentPage - 1) * this.pageSize,
                 this.currentPage * this.pageSize
@@ -93,6 +111,29 @@ export default {
         this.currentPage = val;
         this.dataListChange();
       }
+    },
+    watch:{
+        $route(){
+            this.$axios({
+            url: '/airs',
+            params: this.$route.query,
+            method: 'GET'
+        }).then( res => {
+                // console.log(res);
+                let { flights, total, options } = res.data;
+                this.flights = flights;
+                this.total = total;
+                this.options = options;
+                this.initFlights = flights;
+                this.currentPage = 1;
+                // console.log(this.flights);
+                // this.dataList = this.flights.slice(
+                //     (this.currentPage - 1) * this.pageSize,
+                //     this.currentPage * this.pageSize
+                // );
+                this.dataListChange();
+            })
+        }
     }
 }
 </script>

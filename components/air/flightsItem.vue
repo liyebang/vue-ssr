@@ -50,7 +50,7 @@
           <el-col :span="5">
             <el-row>
               <div>
-                <el-button type="warning" size="medium">选定</el-button>
+                <el-button type="warning" size="medium" @click="handleChoose(item)">选定</el-button>
               </div>
               <div class="recommend-surplus">剩余：83</div>
             </el-row>
@@ -82,6 +82,18 @@ export default {
   methods: {
     handleShow: function() {
       this.isShow = !this.isShow;
+    },
+    handleChoose: function (item) {
+      // console.log(item.seat_xid);
+      // console.log(this.data.id);
+      this.$router.push({
+        // 跳转的页面路径
+        path: "/air/order",
+        query: {
+            id: this.data.id,
+            seat_xid: item.seat_xid
+        }
+      })
     }
   },
   computed:{
