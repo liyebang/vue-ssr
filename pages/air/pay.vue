@@ -2,7 +2,7 @@
     <div class="container">
         <div class="main">
             <div class="pay-title">
-                支付总金额 <span class="pay-price">￥ 1000</span>
+                支付总金额 <span class="pay-price">￥ {{data.price}}</span>
             </div>
             <div class="pay-main">
                 <h4>微信支付</h4>
@@ -26,8 +26,35 @@
 </template>
 
 <script>
+import QRCode from "qrcode";
+
 export default {
-    
+    data: function () {
+      return {
+          data:{}
+      }  
+    },
+    mounted(){
+        // 这个处理方法是有缺陷的，不100%准确
+        // userInfo在页面加载完才赋值
+        setTimeout( v => {
+            let {token} = this.$store.state.user.userInfo;
+
+            this.$axios({
+                url: `/airorders/${this.$route.query.id}`,
+                method: 'GET',
+                headers:{
+                    Authorization: `Bearer ${token}` 
+                }
+            }).then( res => {
+                this.data = res.data;
+                const stage = document.querySelector("#qrcode-stage");
+                QRCode.toCanvas(stage,this.data.payInfo.code_url,{
+                    width: 200
+                })
+            } )
+        },2000)
+    }
 }
 </script>
 
