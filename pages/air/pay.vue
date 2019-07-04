@@ -27,13 +27,47 @@
 
 <script>
 import QRCode from "qrcode";
+import { async } from 'q';
 
 export default {
     data: function () {
       return {
-          data:{}
+          data:{},
+          timerid: null
       }  
     },
+    methods:{
+        //查询是否已支付
+        isPay(){
+            let {id, orderNo, price} = this.data;
+            let {token} = this.$store.state.user.userInfo;
+            return this.$axios({
+                url: '/airorders/checkpay',
+                method: 'POST',
+                data:{
+                    id,
+                    nonce_str: price,
+                    out_trade_no: orderNo
+                },
+                headers:{
+                    Authorization: `Bearer ${token}` 
+                }
+            }).then( res => {
+                if(res.data.statusTxt === "订单未支付"){
+                    return false;
+                }else{
+                    return true;
+                }
+            })
+        }
+
+    },
+
+    //组件销毁后清除定时器
+    destroyed(){
+        clearInterval(this.timerid);
+    },
+
     mounted(){
         // 这个处理方法是有缺陷的，不100%准确
         // userInfo在页面加载完才赋值
@@ -52,8 +86,18 @@ export default {
                 QRCode.toCanvas(stage,this.data.payInfo.code_url,{
                     width: 200
                 })
+
+                //同时发起验证是否支付
+                this.timerid = setInterval( async () => {
+                    const pay = await this.isPay();
+                    if(pay){
+                        this.$message.success("订单支付成功");
+                        clearInterval(this.timerid);
+                    }
+                },3000)
+
             } )
-        },2000)
+        },150)
     }
 }
 </script>
